@@ -169,6 +169,26 @@ export class Routes {
             return await this.activityController.getActivity(tripId)
         })
 
+        //Atualizar atividade de uma viagem
+        app.withTypeProvider<ZodTypeProvider>().put('/trips/:tripId/activity/:activityId', {
+            schema: {
+                params: z.object({
+                    tripId: z.string().uuid(),
+                    activityId: z.string().uuid()
+                }),
+                body: z.object({
+                    title: z.string().min(4),
+                    occurs_at: z.coerce.date()
+                })
+            },
+        }, async (request) => {
+            const { tripId, activityId } = request.params
+            const { title, occurs_at } = request.body
+
+            const activity: Activity = { tripId, title, occurs_at };
+            return await this.activityController.updateActivity(tripId, activityId, activity)
+        })
+
         //Deletar atividade de uma viagem
         app.withTypeProvider<ZodTypeProvider>().delete('/trips/:tripId/activity/:activityId', {
             schema: {

@@ -55,6 +55,31 @@ export default class ParticipantService {
         return { activities: activities }
     }
 
+    async updateActivity(tripId: string, activityId: string, activityUpdate: Activity){
+        const trip = await prisma.trip.findUnique({
+            where: { id: tripId }
+        })
+
+        if(!trip){
+            throw new ClientError('Trip not found')
+        }
+
+        if(dayjs(activityUpdate.occurs_at).isBefore(trip.starts_at) || dayjs(activityUpdate.occurs_at).isAfter(trip.ends_at)){
+            throw new ClientError('Invalid activity date')
+        }
+
+        const updateData: any = {};
+        if (activityUpdate.title) updateData.title = activityUpdate.title;
+        if (activityUpdate.occurs_at) updateData.occurs_at = activityUpdate.occurs_at;
+
+        await prisma.activity.update({
+            where: { id: activityId },
+            data: updateData
+        });
+
+        return { tripId: trip.id }
+    }
+
     async deleteActivity(tripId: string, activityId: string){
         let trip = await prisma.trip.findUnique({
             where: { id: tripId },

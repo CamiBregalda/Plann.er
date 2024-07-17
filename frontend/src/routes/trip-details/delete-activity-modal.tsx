@@ -33,7 +33,7 @@ export function DeleteActivityModal({ closeDeleteActivityModal, activity }: Dele
                     <h2 className="text-lg font-semibold">Deletar Atividade</h2>
                     <div className="text-center">
                         <p className="text-md">Tem certeza que deseja deletar a atividade: <br /><b>{activity.title}</b></p>
-                        <p className="text-md mt-2">Marcada para: <b>{format(activity.occurs_at, 'd/LL')} às {format(activity.occurs_at, 'HH:mm')}h</b></p>
+                        <p className="text-md mt-2">Marcada para: <b>{format(activity.occurs_at, 'dd/LL')} às {format(activity.occurs_at, 'HH:mm')}h</b></p>
                     </div>
                     
                 </div>

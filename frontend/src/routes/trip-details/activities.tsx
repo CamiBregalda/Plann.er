@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { Activity, CircleCheck } from "lucide-react";
+import { Activity, CircleCheck, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../../lib/axios";
 import { DeleteActivityModal } from "./delete-activity-modal"
+import { UpdateActivityModal } from "./update-activity-modal"
 
 interface Activity {
     date: string,
@@ -26,6 +27,7 @@ interface ActivityDetails {
 export function Activities() {
     const { tripId } = useParams()
     const [activities, setActivities] = useState<Activity[]>([])
+    const [isUpdateActivityModalOpen, setIsUpdateActivityModalOpen] = useState(false) 
     const [isDeleteActivityModalOpen, setIsDeleteActivityModalOpen] = useState(false) 
     const [selectedActivity, setSelectedActivity] = useState<ActivityDetails>();
 
@@ -43,6 +45,16 @@ export function Activities() {
         setIsDeleteActivityModalOpen(false)
     }
 
+    function openUpdateActivityModal(activity: ActivityDetails){
+        setSelectedActivity(activity)
+        setIsUpdateActivityModalOpen(true)
+    }
+
+    function closeUpdateActivityModal(){
+        setSelectedActivity(undefined)
+        setIsUpdateActivityModalOpen(false)
+    }
+
     return (
         <div className="space-y-8">
             {activities.map(categorie => {
@@ -56,15 +68,21 @@ export function Activities() {
                             <div className="space-y-2.5">
                                 {categorie.activities.map(activity => {
                                     return (
-                                        <button
-                                            key={activity.id}
-                                            className="w-full text-left px-4 py-2.5 bg-zinc-900 rounded-xl shadow-shape flex items-center gap-3"
-                                            onClick={() => openDeleteActivityModal(activity)}
-                                        >
-                                            <CircleCheck className="size-5 text-lime-300"/>
-                                            <span className="text-zinc-100">{activity.title}</span>
-                                            <span className="text-zinc-400 text-sm ml-auto">{format(activity.occurs_at, 'HH:mm')}h</span>
-                                        </button>
+                                        <div key={activity.id} className="w-full bg-zinc-900 rounded-xl shadow-shape flex items-center gap-3">
+                                            <button
+                                                className="text-left px-4 py-2.5 flex items-center gap-3 flex-1"
+                                                onClick={() => openUpdateActivityModal(activity)}
+                                            >
+                                                <CircleCheck className="size-5 text-lime-300"/>
+                                                <span className="text-zinc-100">{activity.title}</span>
+                                            </button>
+                                                <div className="ml-auto text-zinc-400 flex items-center space-x-2">
+                                                    <span className="text-sm">{format(activity.occurs_at, 'HH:mm')}h</span>
+                                                    <button type="button" onClick={() => openDeleteActivityModal(activity)}>
+                                                        <X className="size-5 text-zinc-400 mr-3"/>
+                                                    </button>
+                                                </div>
+                                        </div>
                                     )
                                 })}
                             </div>
@@ -77,6 +95,10 @@ export function Activities() {
 
             { isDeleteActivityModalOpen && selectedActivity && (
                 <DeleteActivityModal closeDeleteActivityModal={closeDeleteActivityModal} activity={selectedActivity}/>
+            )}
+
+            { isUpdateActivityModalOpen && selectedActivity && (
+                <UpdateActivityModal closeUpdateActivityModal={closeUpdateActivityModal} activity={selectedActivity}/>
             )}
         </div>
     )
