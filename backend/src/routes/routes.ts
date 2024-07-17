@@ -50,7 +50,7 @@ export class Routes {
         })
 
         //Criar viagem
-        app.withTypeProvider<ZodTypeProvider>().post(`/trips/`, {
+        app.withTypeProvider<ZodTypeProvider>().post(`/trips`, {
             schema: {
                 body: z.object({
                     destination: z.string({ required_error: 'Destination is required.' }).min(4),
